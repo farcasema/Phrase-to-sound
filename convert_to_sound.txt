@@ -1,0 +1,39 @@
+import os
+from gtts import gTTS
+
+def converteste_text_in_sunet(text, fisier_iesire):
+    # Crează obiectul gTTS cu textul dat și salvează-l în fișierul specificat
+    tts = gTTS(text=text, lang='ro')
+    tts.save(fisier_iesire)
+
+def proceseaza_fisiere(director_intrare, director_iesire):
+    # Verifică dacă directorul de ieșire există și, în caz contrar, creează-l
+    if not os.path.exists(director_iesire):
+        os.makedirs(director_iesire)
+
+    # Parcurge recursiv fișierele din directorul de intrare
+    for radacina, directoare, fisiere in os.walk(director_intrare):
+        for fisier in fisiere:
+            cale_fisier_intrare = os.path.join(radacina, fisier)
+            # Construiește calea către fișierul de ieșire cu extensia .mp3
+            cale_fisier_iesire = os.path.join(director_iesire, f"{os.path.splitext(fisier)[0]}.mp3")
+
+            # Deschide fișierul de intrare și convertește textul la sunet
+            with open(cale_fisier_intrare, 'r', encoding='utf-8') as f:
+                text = f.read().strip()
+                converteste_text_in_sunet(text, cale_fisier_iesire)
+
+if __name__ == "__main__":
+    import sys
+
+    # Verifică dacă numărul corect de argumente a fost furnizat la linia de comandă
+    if len(sys.argv) != 3:
+        print("Utilizare: python converteste_in_sunet.py <director_intrare> <director_iesire>")
+        sys.exit(1)
+
+    # Obține directoarele de intrare și ieșire din argumentele liniei de comandă
+    director_intrare = sys.argv[1]
+    director_iesire = sys.argv[2]
+
+    # Procesează fișierele din directorul de intrare și salvează
+    proceseaza_fisiere(director_intrare, director_iesire)

@@ -1,0 +1,41 @@
+import tkinter as tk 
+from gtts import gTTS 
+import pygame 
+from io import BytesIO 
+
+class TextToSpeechApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Text to Speech App")
+
+        self.label = tk.Label(root, text="Introduceți propoziția:") 
+        self.label.pack(pady=10) 
+
+        self.text_entry = tk.Entry(root, width=40)
+        self.text_entry.pack(pady=10)
+
+        self.play_button = tk.Button(root, text="Redă", command=self.play_text)
+        self.play_button.pack(pady=10)
+
+    def play_text(self):
+        text = self.text_entry.get() 
+
+        if text:
+            tts = gTTS(text, lang="ro") 
+            audio_data = BytesIO() 
+            tts.write_to_fp(audio_data) 
+
+            audio_data.seek(0) 
+            pygame.mixer.init() 
+            pygame.mixer.music.load(audio_data)
+            pygame.mixer.music.play()
+ 
+            
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+
+if __name__ == "__main__":
+    root = tk.Tk() 
+    app = TextToSpeechApp(root)
+    root.mainloop()
+
